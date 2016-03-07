@@ -1,0 +1,19 @@
+{
+	"name": "ikutil",
+	"url": "https://github.com/ikonicgames/ikutil",
+	"license": "MIT",
+	"tags": [
+		"cpp",
+		"flash",
+		"neko",
+		"js",
+		"game"
+	],
+	"description": "A collection of tools and utilities to assist in the creation of games using Flambe.",
+	"version": "0.0.1",
+	"releaseNote": "Initial release",
+	"contributors": ["ikonone"],
+	"dependencies": {
+		"flambe"
+	}
+}
