@@ -106,7 +106,7 @@ class GameScaler extends Sprite {
 		return height * 0.5;
 	}
 
-	private var _scale:Float;
+	private var _scale:Float = 1;
 	private var _width:Int;
 	private var _height:Int;
 }
