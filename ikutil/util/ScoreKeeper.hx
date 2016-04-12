@@ -3,6 +3,7 @@ package ikutil.util;
 import flambe.System;
 import flambe.util.Value;
 import flambe.util.Signal0;
+import flambe.util.Signal1;
 
 enum ScoreDirection {
 	up;
@@ -29,6 +30,11 @@ class ScoreKeeper {
 	public var onScoreReset(default, null):Signal0;
 
 	/**
+	 * Triggered when a new high score is set.
+	 */
+	public var onNewHighScore(default, null):Signal1<Int>;
+
+	/**
 	 * @brief      Creates a new ScoreKeeper...
 	 *
 	 * @param      value      The initial value of the score.
@@ -41,6 +47,7 @@ class ScoreKeeper {
 	    score = new Value<Int>(value);
 
 	    onScoreReset = new Signal0();
+	    onNewHighScore = new Signal1<Int>();
 	}
 
 	/**
@@ -102,6 +109,7 @@ class ScoreKeeper {
 
 		_highScore = score._;
 		System.storage.set("HighScore", score._);
+		onNewHighScore.emit(_highScore);
 
 		return true;
 	}
