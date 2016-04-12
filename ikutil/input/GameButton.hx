@@ -3,35 +3,40 @@ package ikutil.input;
 import flambe.System;
 import flambe.input.Key;
 import flambe.input.KeyboardEvent;
+import flambe.input.MouseEvent;
 import flambe.input.TouchPoint;
 import flambe.math.Rectangle;
 
-/**
- * @brief      A button that takes a list of keys and a screen area.
- */
+typedef MouseData = {
+	var isDown:Bool;
+	var inDims:Bool;
+	var viewX:Float;
+	var viewY:Float;
+}
+
 class GameButton {
 	/**
-	 * True if the button is down.
+	 * True if button is down.
 	 */
 	public var isDown(get, never):Bool;
 
 	/**
-	 * A list of keys that trigger this button.
+	 * List of keys that trigger this button
 	 */
 	public var keys(default, null):Array<Key>;
 
 	/**
-	 * Dimensions of the button on the touchscreen.
+	 * Dimensions of the button on the screen.
 	 */
 	public var dims(default, null):Rectangle;
 
 	/**
 	 * @brief      Instantiates a button with the provided dimensions.
 	 *
-	 * @param      x       x position of the touch screen dimensions.
-	 * @param      y       y position of the touch screen dimensions.
-	 * @param      width   width of the button on the touchscreen.
-	 * @param      height  height of the button on the touchscreen.
+	 * @param      x       x position of the button on the screen.
+	 * @param      y       y position of the button on the screen.
+	 * @param      width   width of the button on the screen.
+	 * @param      height  height of the button on the screen.
 	 */
 	public function new(x:Float = 0, y:Float = 0, width:Float = 1, height:Float = 1) {
 	    keys = new Array<Key>();
@@ -40,12 +45,23 @@ class GameButton {
 	    _activeKeys = new Map<Key, Bool>();
 	    _touchIDs = new Array<Int>();
 
+	    _mouseData = {
+	    	isDown : false,
+	    	inDims : false,
+	    	viewX : 0,
+	    	viewY : 0
+	    };
+
 	    System.keyboard.down.connect(onKeyDown);
 	    System.keyboard.up.connect(onKeyUp);
 
 	    System.touch.down.connect(onTouchDown);
 	    System.touch.up.connect(onTouchUp);
 	    System.touch.move.connect(onTouchMove);
+
+	    System.mouse.down.connect(onMouseDown);
+	    System.mouse.up.connect(onMouseUp);
+	    System.mouse.move.connect(onMouseMove);
 	}
 
 	public function update():Void {
@@ -57,7 +73,7 @@ class GameButton {
 	   	 		continue;
 	   	 	}
 
-	   	 	_isDown = _isDown || _activeKeys.get(key);
+	   	 	_isDown = _isDown || _activeKeys.get(key) || (_mouseData.isDown && _mouseData.inDims);
 	   	 }
 	}
 
@@ -106,6 +122,25 @@ class GameButton {
 	    update();
 	}
 
+	private function onMouseDown(event:MouseEvent):Void {
+		_mouseData.inDims = dims.contains(event.viewX, event.viewY);
+    	_mouseData.isDown = true;
+
+    	update();
+	}
+
+	private function onMouseUp(event:MouseEvent):Void {
+	    _mouseData.inDims = dims.contains(event.viewX, event.viewY);
+	    _mouseData.isDown = false;
+
+	    update();
+	}
+
+	private function onMouseMove(event:MouseEvent):Void {
+		_mouseData.inDims = dims.contains(event.viewX, event.viewY);
+		update();
+	}
+
 	private function get_isDown():Bool {
 	    return _isDown;
 	}
@@ -113,4 +148,5 @@ class GameButton {
 	private var _isDown:Bool = false;
 	private var _activeKeys:Map<Key, Bool>;
 	private var _touchIDs:Array<Int>;
+	private var _mouseData:MouseData;
 }
